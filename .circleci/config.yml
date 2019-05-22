@@ -1,0 +1,13 @@
+version: 2.1
+
+orbs:
+  discord: sandbox/discord@dev:first
+
+jobs:
+  build:
+    docker:
+      - image: circleci/alpine:latest
+    steps:
+      - discord/approval:
+        - webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
+    
