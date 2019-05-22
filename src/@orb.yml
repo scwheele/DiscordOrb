@@ -1,0 +1,8 @@
+version: 2.1
+
+description: >
+  Easily integrate custom Discord notifications into your CircleCI Project.
+
+## Requirements ##
+## - Bash
+## - cURL
