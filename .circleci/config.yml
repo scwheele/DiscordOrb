@@ -4,12 +4,24 @@ orbs:
   discord: sandbox/discord@dev:0.0.1
 
 jobs:
-  build:
+  test_approval:
     docker:
       - image: circleci/node
     steps:
       - discord/approval:
           webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
+  test_notify:
+    docker:
+      - image: circleci/node
+    steps:
       - discord/notify:
           message: "Build unable to process"
           webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
+workflows:
+  version: 2
+  test_all_steps:
+    jobs:
+      - test_approval
+      - test_notify:
+          requires:
+            - test_approval
