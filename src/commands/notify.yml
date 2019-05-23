@@ -53,20 +53,20 @@ steps:
                 \"color\": \"<< parameters.color >>\", \
                 \"url\": \"<< parameters.url >>\", \
                 \"fields\": [ \
-                  <<# parameters.include_project_field >>
+                  <<# parameters.include_project_field >> \
                   { \
                     \"name\": \"Project\", \
                     \"value\": \"$CIRCLE_PROJECT_REPONAME\", \
                     \"inline\": true \
                   }, \
-                  <</ parameters.include_project_field >>
-                  <<# parameters.include_job_number_field >>
+                  <</ parameters.include_project_field >> \
+                  <<# parameters.include_job_number_field >> \
                   { \
                     \"name\": \"Build Number\", \
                     \"value\": \"$CIRCLE_PROJECT_BUILD_NUM\", \
                     \"inline\": true  \
                   } \
-                  <</ parameters.include_job_number_field >>
+                  <</ parameters.include_job_number_field >> \
                 ] \
               }] \
             }" << parameters.webhook >>
