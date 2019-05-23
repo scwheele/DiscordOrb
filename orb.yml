@@ -124,7 +124,7 @@ commands:
                     <<# parameters.include_job_number_field >>
                     { \
                       \"name\": \"Build Number\", \
-                      \"value\": \"$CIRCLE_PROJECT_BUILD_NUM\", \
+                      \"value\": \"$CIRCLE_BUILD_NUM\", \
                       \"inline\": true  \
                     } \
                     <</ parameters.include_job_number_field >>
