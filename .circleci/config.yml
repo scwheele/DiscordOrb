@@ -19,6 +19,14 @@ jobs:
           include_job_number_field: true
           include_project_field: true
           webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
+  test_status:
+    docker:
+      - image: circleci/node
+    steps:
+      - discord/status:
+          include_job_number_field: true
+          include_project_field: true
+          webhook: webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
 workflows:
   version: 2
   test_all_steps:
@@ -27,3 +35,6 @@ workflows:
       - test_notify:
           requires:
             - test_approval
+      - test_status:
+          requires:
+            - test_notify
