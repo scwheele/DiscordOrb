@@ -5,7 +5,7 @@ parameters:
     description: Decimal color value for notification attachment color.
     type: string
   message:
-    default: Build Awaiting Approval
+    default: Custom Message
     description: Enter custom message
     type: string
   url:
