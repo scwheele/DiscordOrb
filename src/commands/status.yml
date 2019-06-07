@@ -1,0 +1,152 @@
+description: Send a status alert at the end of a job based on success or failure
+
+parameters:
+  color:
+    default: "23039"
+    description: Decimal color value for notification attachment color.
+    type: string
+  success_message:
+    default: "A $CIRCLE_JOB has succeded!"
+    description: Enter custom message for success
+    type: string
+  failure_message:
+    default: "A $CIRCLE_JOB has failed!"
+    description: Enter custom message for failure
+    type: string
+  url:
+    default: https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}
+    description: The URL to link back to
+    type: string
+  webhook:
+    default: ${DISCORD_WEBHOOK}
+    description: Enter your webhook value OR use the CircleCI UI to add your token under the 'DISCORD_WEBHOOK' env var
+    type: string
+  include_project_field:
+    default: true
+    description: Include the project name field in the message
+    type: boolean
+  include_job_number_field:
+    default: true
+    description: Include the job number field in the message
+    type: boolean
+  fail_only:
+    type: boolean
+    default: false
+    description: If `true`, notifications for successful jobs will not be sent
+  only_for_branches:
+    type: string
+    default: ""
+    description: If set, a comma seperated list of branches for which to send notifications
+
+steps:
+  - run:
+      name: Discord - Setting Failure Condition
+      command: |
+        echo 'export DISCORD_BUILD_STATUS="fail"' >> $BASH_ENV
+      when: on_fail
+  
+  - run:
+      name: Discord - Setting Success Condition
+      command: |
+        echo 'export DISCORD_BUILD_STATUS="success"' >> $BASH_ENV
+      when: on_success
+
+  - run:
+      name: Provide error if non-bash shell
+      command: |
+        if [ -z "$BASH" ]; then
+          echo Bash not installed.
+          exit 1
+        fi
+
+  - run:
+      name: Discord - Sending Status Alert
+      shell: /bin/bash
+      when: always
+      command: |
+        current_branch_in_filter=false
+
+        IFS="," read -ra BRANCH_FILTERS \<<< "<< parameters.only_for_branches >>"
+        for i in "${BRANCH_FILTERS[@]}"; do
+          if [ "${i}" == "${CIRCLE_BRANCH}" ]; then
+            current_branch_in_filter=true
+          fi
+        done
+
+        if [ "x" == "x<< parameters.only_for_branches>>" ] || [ "$current_branch_in_filter" = true ]; then
+          # Provide error if no webhook is set and error. Otherwise continue
+          if [ -z "<< parameters.webhook >>" ]; then
+            echo "NO DISCORD WEBHOOK SET"
+            echo "Please input your DISCORD_WEBHOOK value either in the settings for this project, or as a parameter for this orb."
+            exit 1
+          else
+            if [ "$DISCORD_BUILD_STATUS" = "success" ]; then
+              #Skip if fail_only
+              if [ << parameters.fail_only >> = true ]; then
+                echo "The job completed successfully"
+                echo '"fail_only" is set to "true". No Discord notification sent.'
+              else
+                # success
+
+                curl -X POST -H 'Content-type: application/json' \
+                  --data " \
+                    { \
+                      \"tts\": false, \
+                      \"embeds\": [{ \
+                        \"title\": \"<< parameters.success_message >>\", \
+                        \"color\": \"<< parameters.color >>\", \
+                        \"url\": \"<< parameters.url >>\", \
+                        \"fields\": [ \
+                          <<# parameters.include_project_field >>
+                          { \
+                            \"name\": \"Project\", \
+                            \"value\": \"$CIRCLE_PROJECT_REPONAME\", \
+                            \"inline\": true \
+                          }, \
+                          <</ parameters.include_project_field >>
+                          <<# parameters.include_job_number_field >>
+                          { \
+                            \"name\": \"Build Number\", \
+                            \"value\": \"$CIRCLE_BUILD_NUM\", \
+                            \"inline\": true  \
+                          } \
+                          <</ parameters.include_job_number_field >>
+                        ] \
+                      }] \
+                    }" << parameters.webhook >>
+                echo "Job completed successfully"
+              fi
+            else
+              # fail
+              curl -X POST -H 'Content-type: application/json' \
+                --data " \
+                  { \
+                    \"tts\": false, \
+                    \"embeds\": [{ \
+                      \"title\": \"<< parameters.failure_message >>\", \
+                      \"color\": \"<< parameters.color >>\", \
+                      \"url\": \"<< parameters.url >>\", \
+                      \"fields\": [ \
+                        <<# parameters.include_project_field >>
+                        { \
+                          \"name\": \"Project\", \
+                          \"value\": \"$CIRCLE_PROJECT_REPONAME\", \
+                          \"inline\": true \
+                        }, \
+                        <</ parameters.include_project_field >>
+                        <<# parameters.include_job_number_field >>
+                        { \
+                          \"name\": \"Build Number\", \
+                          \"value\": \"$CIRCLE_BUILD_NUM\", \
+                          \"inline\": true  \
+                        } \
+                        <</ parameters.include_job_number_field >>
+                      ] \
+                    }] \
+                  }" << parameters.webhook >>
+              echo "Job failed, notification sent."
+            fi
+          fi
+        else
+          echo "Current branch is not include in only_for_branches filter; no status alert will be sent."
+        fi

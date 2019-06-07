@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  discord: sandbox/discord@dev:0.0.2
+  discord: sandbox/discord@dev:0.0.3
 
 jobs:
   test_approval:
