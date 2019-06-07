@@ -1,16 +1,20 @@
 description: Send a status alert at the end of a job based on success or failure
 
 parameters:
-  color:
-    default: "23039"
+  failure_color:
+    default: "14177041"
+    description: Decimal color value for notification attachment color.
+    type: string
+  success_color:
+    default: "655104"
     description: Decimal color value for notification attachment color.
     type: string
   success_message:
-    default: "A $CIRCLE_JOB has succeded!"
+    default: "A $CIRCLE_JOB job has succeded!"
     description: Enter custom message for success
     type: string
   failure_message:
-    default: "A $CIRCLE_JOB has failed!"
+    default: "A $CIRCLE_JOB job has failed!"
     description: Enter custom message for failure
     type: string
   url:
@@ -94,7 +98,7 @@ steps:
                       \"tts\": false, \
                       \"embeds\": [{ \
                         \"title\": \"<< parameters.success_message >>\", \
-                        \"color\": \"<< parameters.color >>\", \
+                        \"color\": \"<< parameters.success_color >>\", \
                         \"url\": \"<< parameters.url >>\", \
                         \"fields\": [ \
                           <<# parameters.include_project_field >>
@@ -124,7 +128,7 @@ steps:
                     \"tts\": false, \
                     \"embeds\": [{ \
                       \"title\": \"<< parameters.failure_message >>\", \
-                      \"color\": \"<< parameters.color >>\", \
+                      \"color\": \"<< parameters.failure_color >>\", \
                       \"url\": \"<< parameters.url >>\", \
                       \"fields\": [ \
                         <<# parameters.include_project_field >>
@@ -137,7 +141,7 @@ steps:
                         <<# parameters.include_job_number_field >>
                         { \
                           \"name\": \"Build Number\", \
-                          \"value\": \"$CIRCLE_BUILD_NUM\", \
+                          \"value\": \"$CIRCLE_BUILD_NUM\", \ s
                           \"inline\": true  \
                         } \
                         <</ parameters.include_job_number_field >>
