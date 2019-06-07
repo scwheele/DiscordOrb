@@ -8,8 +8,7 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - discord/approval:
-          webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
+      - discord/approval
   test_notify:
     docker:
       - image: circleci/node
@@ -18,7 +17,6 @@ jobs:
           message: "Build unable to process"
           include_job_number_field: true
           include_project_field: true
-          webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
   test_status:
     docker:
       - image: circleci/node
@@ -26,7 +24,6 @@ jobs:
       - discord/status:
           include_job_number_field: true
           include_project_field: true
-          webhook: https://discordapp.com/api/webhooks/580466780237987870/sL59nGMtzf9goEhrq9C8CWTKbrXM7TawvnCuG_JrpdV823AnbotSdCnEbX8cgPyqipcq
 workflows:
   version: 2
   test_all_steps:
