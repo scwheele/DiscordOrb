@@ -14,7 +14,7 @@ jobs:
       - image: circleci/node
     steps:
       - discord/notify:
-          message: "Build unable to process"
+          message: "Build unable to process Hello"
           include_job_number_field: true
           include_project_field: true
   test_status:
